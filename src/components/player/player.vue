@@ -70,6 +70,9 @@
 </template>
 
 <script>
+import { mapGetter, mapMutations } from 'vuex'
+import { playMode } from 'asset/js/config'
+
 export default {
   data () {
     return {
