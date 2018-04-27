@@ -1,0 +1,9 @@
+@mixin circleborder ($width: 15px, $bdw: 1px, $col: #fff) {
+  width: $width;
+  height: $width;
+  text-align: center;
+  line-height: $width;
+  vertical-align: middle;
+  border: $bdw solid $col;
+  border-radius: 50%;
+}
