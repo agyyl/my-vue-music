@@ -1,5 +1,5 @@
 <template>
-  <div>我的歌单</div>
+  <div id="songdetail">歌曲详情</div>
 </template>
 
 <script>
@@ -20,4 +20,9 @@ export default {
 
 </script>
 <style lang='scss' scoped>
+#songdetail {
+  width: 100%;
+  height: 100%;
+  border: 2px solid #aaa;
+}
 </style>

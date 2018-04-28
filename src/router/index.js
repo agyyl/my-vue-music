@@ -1,7 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import HelloWorld from '@/components/HelloWorld'
 import MyList from 'components/my-list/my-list'
+import Songlist from 'components/songlist/songlist'
+import SongDetail from 'components/songdetail/songdetail'
+import ListDetail from 'components/listdetail/listdetail'
 
 Vue.use(Router)
 
@@ -9,8 +11,25 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'MyList',
+      redirect: '/mylist'
+    },
+    {
+      path: '/mylist',
       component: MyList
+    },
+    {
+      path: '/songlist',
+      component: Songlist,
+      children: [
+        {
+          path: '/:id',
+          component: ListDetail
+        }
+      ]
+    },
+    {
+      path: '/songdetail',
+      componet: SongDetail
     }
   ]
 })

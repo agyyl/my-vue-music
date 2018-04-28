@@ -7,7 +7,7 @@
         <span>
           <i class="glyphicon glyphicon-step-backward lastsong"></i>
         </span>
-        <span class="playing">
+        <span class="playing" @click="play">
           <i class="glyphicon glyphicon-play"></i>
           <!-- <i class="glyphicon glyphicon-pause"></i> -->
         </span>
@@ -71,21 +71,66 @@
 
 <script>
 import { mapGetter, mapMutations } from 'vuex'
-import { playMode } from 'asset/js/config'
+import { playMode } from 'assets/js/config'
+import { getRecommend, getDiscList } from 'api/recommend'
+import { ERR_OK } from 'api/config'
 
 export default {
   data () {
     return {
+      discList: [],
+      recommends: [],
+      listid: -1
     }
-  }
+  },
+
+  created () {
+    // this._getDiscList('3812213538')
+
+    // this._getRecommend()
+  },
 
   // components: {},
 
-  // computed: {},
+  // computed: {
+
+  // },
 
   // mounted: {},
 
-  // methods: {}
+  // watch: {
+  //   listid () {
+  //     this._getDiscList(this.listid)
+  //   }
+  // },
+
+  methods: {
+    play () {
+      console.log(this.listid)
+      this._getDiscList(this.listid)
+    },
+    _getDiscList () {
+      getDiscList().then((res) => {
+        console.log(1)
+        if (res.code === ERR_OK) {
+          this.discList = res.data.list
+          console.log(res.data.list)
+        }
+      })
+    },
+    _getRecommend () {
+      getRecommend().then((res) => {
+        if (res.code === ERR_OK) {
+          this.recommends = res.data.slider
+          this.listid = res.data.slider[0].id
+          console.log(res.data)
+        }
+      })
+    },
+    ...mapMutations({
+      setDisc: 'SET_DISC'
+    })
+  }
 }
 
 </script>

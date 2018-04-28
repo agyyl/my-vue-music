@@ -1,6 +1,9 @@
 <template>
 <div id="app">
   <m-header></m-header>
+  <keep-alive>
+    <router-view></router-view>
+  </keep-alive>
   <player></player>
 </div>
 </template>
