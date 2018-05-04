@@ -1,9 +1,9 @@
 <template>
   <div id="listdetail">
-    <scroll class="listshow">
-      <div class="song" v-if="this.disc">
+    <scroll class="listshow" v-if="disc">
+      <div class="song">
         <div>{{disc[0]}}</div>
-         <div v-for="item in this.disc" :key="item.id" @click="choosesSong">{{item.name}}</div>
+         <div v-for="item in disc" :key="item.id" @click="choosesSong(item)">{{item.name}}</div>
       </div>
     </scroll>
   </div>
@@ -27,6 +27,9 @@ export default {
     Scroll
   },
 
+  watch: {
+  },
+
   computed: {
     ...mapGetters([
       'disc'
@@ -35,30 +38,18 @@ export default {
 
   // mounted: {},
 
-  // created () {
-  //   this.list = this.disc()
-  // },
+  created () {
+  },
 
   methods: {
-    choosesSong () {
-      // 先处理歌单
-      // 将这首歌和歌单保存到 播放器
-      // 跳转到播放器
-      // console.log(item)
-      // let dealList = this.disc.map((song) => {
-      //   return createSong(song)
+    choosesSong (item) {
+      // 将这首歌添加到 播放器 当前播放列表
+      // 跳转到 播放页面
+      // this.$router.push({
+      //   path: '/playdetail'
       // })
-      // let dealSong = createSong(item)
-      // this.chooseSong({
-      //   list: dealList,
-      //   song: dealSong
-      // })
-      getSongsUrl(this.disc).then(res => {
-        if (res.code === ERR_OK) {
-          console.log(res)
-        }
-      })
-    },
+      this.chooseSong(item)
+},
     ...mapActions([
       'chooseSong'
     ])

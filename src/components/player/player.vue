@@ -4,7 +4,7 @@
     <div class="song col-md-10 col-md-offset-1 container">
       <!-- 左侧 控制 暂停 上下一首 歌 -->
       <div class="control1 col-md-2">
-        <audio src="assets/images/司夏 - 刹那芳华曲.mp3" ref="aud" controls @ended="playEnd">您的浏览器不支持 audio 标签</audio>
+        <audio :src="currentsong.url" ref="aud" @ended="playEnd">您的浏览器不支持 audio 标签</audio>
         <span>
           <i class="glyphicon glyphicon-step-backward lastsong"></i>
         </span>
@@ -80,91 +80,58 @@ import { Song, createSong } from 'assets/js/song'
 export default {
   data () {
     return {
-      discList: [],
-      recommends: [],
-      listid: -1,
-      songsrc: '',
-      playinglist: ''
     }
   },
 
-  created () {
-    // this._getDiscList('3812213538')
-
-    // this._getRecommend()
-    console.log(1)
-    if (this.$refs.aud) {
-      console.log(2)
-      this.$refs.aud.play()
-    }
-  },
-
-  // components: {},
-
-  computed: {
-    song: function () {
-      return this.playlistreally[this.currentIndex]
-    },
-    songId: function () {
-      return this.song.id
+computed: {
+    currentsong: function () {
+      let list = (this.mode === playMode.random) ? this.playinglist : this.playlistreally
+      console.log(list[this.currentIndex])
+      return list[this.currentIndex] || {}
     },
     ...mapGetters([
-      'playing',
-      'currenttime',
+      'playlist',
+      'playlistreally',
       'mode',
       'currentIndex',
-      'playlist',
-      'playlistreally'
+      'playing',
+      'currenttime'
     ])
   },
 
-  // mounted: {},
-
-  // watch: {
-  //   listid () {
-  //     this._getDiscList(this.listid)
-  //   }
-  // },
+  watch: {
+    playing (newval, oldval) {
+      if (newval) {
+        console.log(this.$refs.aud)
+        this.$refs.aud.play()
+      } else {
+        this.$refs.aud.pause()
+      }
+    }
+  },
 
   methods: {
-    playEnd () {
+    playEnd () { // 一首歌播放结束
       this.currentIndex += 1
+      if (this.currentIndex >= this.playlist.length) { // 列表播放完
+        if (this.mode === playMode.sequence) {
+          this.currentIndex = 0
+          this.setPlaying(false)
+        } else  {
+          this.currentIndex = 0
+          this.$refs.aud.play()
+        }
+      }
     },
     playtoggle () {
-      // this.$refs.aud.play()
-      this.$refs.aud.src = "http://dl.stream.qqmusic.qq.com/http://dl.stream.qqmusic.qq.com/C400002wHxyY1gS4PW.m4a?guid=3109172592&vkey=8A24B88C29E948B31607CB6C19F73F264AE8C9F9448368D263C8ED061CD6407CDE80A7779A120FBF5E5CD2DA4E1BD464DE903B95EFC0F5E0&uin=0&fromtag=38"
-      if (this.playing) {
-        this.$refs.aud.pause()
-      } else {
-        this.$refs.aud.play()
-      }
-      this.setPlaying(!this.playing) 
-    },
-    _getDiscList () {
-      getDiscList().then((res) => {
-        console.log(1)
-        if (res.code === ERR_OK) {
-          this.discList = res.data.list
-          console.log(res.data.list)
-        }
-      })
-    },
-    _getRecommend () {
-      getRecommend().then((res) => {
-        if (res.code === ERR_OK) {
-          this.recommends = res.data.slider
-          this.listid = res.data.slider[0].id
-          console.log(res.data)
-        }
-      })
-    },
-    _initSongList () {
-      this.playinglist = this.playlist.map(song => {
-        return createSong(song)
-      })
+      this.setPlaying(!this.playing)
+      // if (this.playing) {
+      //   this.$refs.aud.pause()
+      // } else {
+      //   this.$refs.aud.play()
+      // }
     },
     ...mapMutations({
-      setDisc: 'SET_DISC',
       setPlaying: 'SET_PLAYING_STATE'
     })
   }
@@ -190,13 +157,6 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      audio {
-        position: absolute;
-        top: -100%;
-        width: 100%;
-        height: 100%;
-        z-index: 9;
-      }
       span {
         flex: 1 1 auto;
         i {
