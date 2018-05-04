@@ -10,6 +10,9 @@ import './assets/js/jquery-vendor.js'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 
+// eslint-disable-next-line
+import vConsole from 'vconsole'
+
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */

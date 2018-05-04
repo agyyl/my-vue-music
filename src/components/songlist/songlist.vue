@@ -14,6 +14,7 @@ import { mapGetter, mapMutations } from 'vuex'
 import { getRecommend, getDiscList, getSongList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
 import { addClass } from 'assets/js/dom'
+import { createSong, isValidMusic, processSongUrl } from 'assets/js/song'
 
 export default {
   data () {
@@ -44,10 +45,20 @@ export default {
           this.$router.push({
             path: `/songlist/${item.dissid}`
           })
-          console.log(this.songlist)
+          this.songlist = this._normalizeSongs(this.songlist)
           this.setDisc(this.songlist)
+          console.log(res.cdlist[0].songlist)
         }
       })
+    },
+    _normalizeSongs (list) {
+      let ret = []
+      list.forEach(musicData => {
+        if (isValidMusic(musicData)) {
+          ret.push(createSong(musicData))
+        }
+      })
+      return ret
     },
     _getRecommend () {
       getRecommend().then((res) => {
@@ -60,6 +71,7 @@ export default {
       getDiscList().then((res) => {
         if (res.code === ERR_OK) {
           this.discList = res.data.list
+          console.log(res.data.list)
         }
       })
     },
