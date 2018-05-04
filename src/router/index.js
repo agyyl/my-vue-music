@@ -1,8 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
 import MyList from 'components/my-list/my-list'
 import Songlist from 'components/songlist/songlist'
-import SongDetail from 'components/songdetail/songdetail'
+import Lrc from 'components/lrc/lrc'
+
 import ListDetail from 'components/listdetail/listdetail'
 
 Vue.use(Router)
@@ -22,14 +24,14 @@ export default new Router({
       component: Songlist,
       children: [
         {
-          path: '/:id',
+          path: '/songlist/:id',
           component: ListDetail
         }
       ]
     },
     {
-      path: '/songdetail',
-      componet: SongDetail
+      path: '/lir',
+      component: Lrc
     }
   ]
 })

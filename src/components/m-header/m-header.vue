@@ -6,11 +6,11 @@
     <router-link tag="div" class="mymusic col-md-3 routeritem" to="/mylist">
       我的歌单
     </router-link>
-    <router-link tag="div" class="player col-md-3 routeritem" to="/songlist">
-      歌单
+    <router-link tag="div" class="lrc col-md-3 routeritem" to="/lrc">
+      歌词
     </router-link>
-    <router-link tag="div" class="songdetail col-md-3 routeritem" to="/songdetail">
-      歌曲详情
+    <router-link tag="div" class="playlist col-md-3 routeritem" to="/songlist">
+      歌单
     </router-link>
   </div>
 </template>

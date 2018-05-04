@@ -6,5 +6,8 @@ const state = {
   mode: playMode.sequence,
   currentIndex: -1,
   playlist: [],
-  playlistreally: []
+  playlistreally: [],
+  disc: [] // 显示的歌单
 }
+
+export default state

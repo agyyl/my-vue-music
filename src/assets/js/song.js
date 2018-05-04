@@ -26,6 +26,7 @@ export default class Song {
           this.lyric = Base64.decode(res.lyric)
           resolve(this.lyric)
         } else {
+          // eslint-disable-next-line
           reject('no lyric')
         }
       })

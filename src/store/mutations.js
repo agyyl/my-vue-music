@@ -18,5 +18,10 @@ const mutations = {
   },
   [types.SET_PLAY_MODE] (state, mode) {
     state.mode = mode
+  },
+  [types.SET_DISC] (state, list) {
+    state.disc = list
   }
 }
+
+export default mutations

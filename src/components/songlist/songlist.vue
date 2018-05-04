@@ -1,8 +1,11 @@
 <template>
-  <div id="songdetail">
-    <div v-for="item in discList" :key="item.id" @click="slecklist(item)">
-      {{item}}
+  <div id="songlist">
+    <div class="listshow">
+      <div v-for="item in discList" :key="item.dissid" @click="slecklist(item)">
+        {{item.dissname}}
+      </div>
     </div>
+    <router-view></router-view>
   </div>
 </template>
 
@@ -10,12 +13,13 @@
 import { mapGetter, mapMutations } from 'vuex'
 import { getRecommend, getDiscList, getSongList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
+import { addClass } from 'assets/js/dom'
 
 export default {
   data () {
     return {
-      recommends: [],
-      discList: [],
+      recommends: [], // QQ音乐 推荐 轮播图
+      discList: [], // QQ音乐 首页 推荐歌单
       songlist: []
     }
   },
@@ -34,14 +38,15 @@ export default {
 
   methods: {
     slecklist (item) {
-      getSongList (item.dissid).then((res) => {
+      getSongList(item.dissid).then((res) => {
         if (res.code === ERR_OK) {
           this.songlist = res.cdlist[0].songlist
           this.$router.push({
             path: `/songlist/${item.dissid}`
           })
+          console.log(this.songlist)
+          this.setDisc(this.songlist)
         }
-        console.log(res)
       })
     },
     _getRecommend () {
@@ -53,10 +58,8 @@ export default {
     },
     _getDiscList () {
       getDiscList().then((res) => {
-        console.log(1)
         if (res.code === ERR_OK) {
           this.discList = res.data.list
-          console.log(res.data.list)
         }
       })
     },
@@ -68,5 +71,22 @@ export default {
 
 </script>
 <style lang='scss' scoped>
-
+#songlist {
+  position: absolute;
+  top: 70px;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+  border: 3px solid green;
+  // height: 100%;
+  .listshow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 9;
+  }
+}
 </style>
