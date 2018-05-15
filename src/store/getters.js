@@ -1,4 +1,4 @@
-import Song from 'assets/js/song'
+// import Song from 'assets/js/song'
 
 export const playing = state => state.playing
 

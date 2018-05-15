@@ -65,7 +65,12 @@ export default {
       this.scroll = new BScroll(this.$refs.wrapper, {
         probeType: this.probeType,
         click: this.click,
-        eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V
+        eventPassthrough: this.direction === DIRECTION_V ? DIRECTION_H : DIRECTION_V,
+        mouseWheel: {
+          speed: 20,
+          invert: false,
+          easeTime: 300
+        }
       })
 
       if (this.listenScroll) {

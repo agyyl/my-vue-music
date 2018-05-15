@@ -1,7 +1,7 @@
 import * as types from './mutation-types'
 import { playMode } from 'assets/js/config'
 import { shuffle } from 'assets/js/util'
-import { savePlaylist, savePlayReal } from 'assets/js/cache'
+import { savePlaylist, savePlayReal, saveIndex } from 'assets/js/cache'
 
 let findIndex = function (list, song) {
   return list.findIndex((item) => {
@@ -22,13 +22,53 @@ export const chooseSong = function ({commit, state}, song) {
     playlistreally = shuffle(playlist)
     index = findIndex(playlistreally, song)
   }
-  console.log(playlist)
-  console.log(index)
-  console.log(song)
-  console.log(playlistreally[index] === song)
+
   commit(types.SET_PLAYING_LIST, savePlaylist(playlist))
   commit(types.SET_PLAYING_LIST_REALL, savePlayReal(playlistreally))
   commit(types.SET_CURRENT_INDEX, index)
   commit(types.SET_PLAYING_STATE, true)
   commit(types.SET_PLAYING_CURRENT_TIME, 0)
+}
+
+export const indexPlus = function ({commit, state}) {
+  let index = state.currentIndex
+  index += 1
+  let flag = false
+  if (index >= state.playlist.length) { // 列表播放完
+    index = 0
+    flag = true
+  }
+  saveIndex(index)
+  commit(types.SET_CURRENT_INDEX, index)
+  return flag
+}
+
+export const indexSubstraction = function ({ commit, state }) {
+  let index = state.currentIndex
+  index -= 1
+  let flag = false
+  if (index < 0) { // 列表播放完
+    flag = true
+    if (state.mode === playMode.sequence) {
+      index = 0
+    } else {
+      index = state.playlist.length - 1
+    }
+  }
+  saveIndex(index)
+  commit(types.SET_CURRENT_INDEX, index)
+  return flag
+}
+
+export const toggleSaveSong = function ({ commit, state }, song) {
+  let newList = state.saveList.slice(0)
+  let index = newList.findIndex((item) => {
+    return item === song
+  })
+  if (index === -1) {
+    newList.push(song)
+  } else {
+    newList.splice(index, 1)
+  }
+  commit(types.SET_SAVE_LIST, newList)
 }

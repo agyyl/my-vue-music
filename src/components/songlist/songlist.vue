@@ -1,19 +1,24 @@
 <template>
   <div id="songlist">
-    <div class="listshow">
-      <div v-for="item in discList" :key="item.dissid" @click="slecklist(item)">
-        {{item.dissname}}
+    <scroll>
+      <div class="listshow">
+        <div v-for="item in discList" :key="item.dissid" @click="slecklist(item)" class="listName">
+          {{item.dissname}}
+        </div>
       </div>
-    </div>
-    <router-view></router-view>
+    </scroll>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
 
 <script>
-import { mapGetter, mapMutations, mapActions } from 'vuex'
+import { mapMutations } from 'vuex'
 import { getRecommend, getDiscList, getSongList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
-import { addClass } from 'assets/js/dom'
+import Scroll from 'base/scroll/scroll'
+// import { addClass } from 'assets/js/dom'
 import { createSong, isValidMusic, processSongsUrl } from 'assets/js/song'
 
 export default {
@@ -31,7 +36,9 @@ export default {
     this._getDiscList()
   },
 
-  // components: {},
+  components: {
+    Scroll
+  },
 
   // computed: {},
 
@@ -39,6 +46,10 @@ export default {
 
   methods: {
     slecklist (item) {
+      if (!item.dissid) {
+        console.log('item.dissid'+item.dissid)
+        return
+      }
       getSongList(item.dissid).then((res) => {
         if (res.code === ERR_OK) {
           this.songlist = res.cdlist[0].songlist
@@ -48,7 +59,6 @@ export default {
           processSongsUrl(this._normalizeSongs(this.songlist)).then(songs => {
             this.setDisc(songs)
           })
-          // console.log(res.cdlist[0].songlist)
         }
       })
     },
@@ -91,15 +101,21 @@ export default {
   left: 0;
   right: 0;
   border: 3px solid green;
+  overflow: hidden;
   // height: 100%;
   .listshow {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 9;
+    // position: absolute;
+    // top: 0;
+    // left: 0;
+    // width: 100%;
+    // height: 100%;
+    // z-index: 9;
+    .listName {
+      height: 18px;
+      margin: 3px;
+      padding-left: 30px;
+      cursor: pointer;
+    }
   }
 }
 </style>

@@ -2,7 +2,7 @@
   <div id="listdetail">
     <scroll class="listshow" v-if="disc">
       <div class="song">
-        <div>{{disc[0]}}</div>
+        <!-- <div>{{disc[0]}}</div> -->
          <div v-for="item in disc" :key="item.id" @click="choosesSong(item)">{{item.name}}</div>
       </div>
     </scroll>
@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex'
-import { getSongList } from 'api/recommend'
-import { ERR_OK } from 'api/config'
-import { createSong, isValidMusic, processSongUrl, getSongsUrl } from 'assets/js/song'
+import { mapGetters, mapActions } from 'vuex'
+// import { getSongList } from 'api/recommend'
+// import { ERR_OK } from 'api/config'
+// import { createSong, isValidMusic, processSongUrl, getSongsUrl } from 'assets/js/song'
 import Scroll from 'base/scroll/scroll'
 
 export default {
@@ -39,17 +39,21 @@ export default {
   // mounted: {},
 
   created () {
+    if (this.disc.length) {
+      this.$router.push(`/songlist`)
+      console.log(this.disc[0])
+    }
   },
 
   methods: {
     choosesSong (item) {
       // 将这首歌添加到 播放器 当前播放列表
       // 跳转到 播放页面
-      // this.$router.push({
-      //   path: '/playdetail'
-      // })
+      this.$router.push({
+        path: '/playdetail'
+      })
       this.chooseSong(item)
-},
+    },
     ...mapActions([
       'chooseSong'
     ])

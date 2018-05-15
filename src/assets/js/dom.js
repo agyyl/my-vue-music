@@ -6,6 +6,10 @@ export function addClass (el, className) {
   el.classList.add(className)
 }
 
+export function removeClass (el, className) {
+  el.classList.remove(className)
+}
+
 export function getData (el, name, val) {
   const prefix = 'data-'
   if (val) {

@@ -5,14 +5,15 @@
       <!-- 左侧 控制 暂停 上下一首 歌 -->
       <div class="control1 col-md-2">
         <audio :src="currentsong.url" ref="aud" @ended="playEnd">您的浏览器不支持 audio 标签</audio>
-        <span>
+        <span @click="lastSong">
           <i class="glyphicon glyphicon-step-backward lastsong"></i>
         </span>
         <span class="playing" @click="playtoggle">
-          <i class="glyphicon glyphicon-play"></i>
+          <!-- <i class="glyphicon" :class="{'glyphicon-play' :playing, 'glyphicon-pause': !playing}"></i> -->
+          <i class="glyphicon" ref="pause" :class="{'glyphicon-play': !playing, 'glyphicon-pause': playing}"></i>
           <!-- <i class="glyphicon glyphicon-pause"></i> -->
         </span>
-        <span>
+        <span @click="nextSong">
           <i class="glyphicon glyphicon-step-forward nextsong"></i>
         </span>
       </div>
@@ -21,15 +22,15 @@
       <div class="show col-md-8">
         <!-- 歌曲图片 -->
         <div class="pic col-md-1 col-md-offset-1">
-          <img src="http://p1.music.126.net/iSNyjV8B3gPLAJ0DExYUIA==/18825838092510573.jpg?param=34y34" alt="">
+          <img :src="currentsong.image" alt="">
         </div>
 
         <!-- 播放信息 -->
         <div class="playinfo col-md-10">
           <!-- 歌曲信息 -->
           <div class="songinfo">
-            <span class="songname">鱼中书</span>
-            <span class="singer">KIYOIII</span>
+            <span class="songname">{{currentsong.name}}</span>
+            <span class="singer">{{currentsong.singer}}</span>
           </div>
 
           <!-- 进度信息 -->
@@ -43,7 +44,7 @@
 
               <!-- 播放时间 -->
               <div class="currenttime col-md-3">
-                <span class="currenttimenumber">01:25</span> / <span class="alltime"> 04:54</span>
+                <span class="currenttimenumber">01:25 {{buffered}}</span> / <span class="alltime"> 04:54</span>
               </div>
           </div>
 
@@ -53,8 +54,8 @@
       </div>
       <!-- 右侧 控制 音量 播放模式 收藏 -->
       <div class="control2 col-md-2 container">
-        <span class="fav col-md-4">
-          <i class="glyphicon glyphicon-heart-empty"></i>
+        <span class="fav col-md-4" @click="toggleSaveSong(currentsong)">
+          <i class="glyphicon" :class="[saved ? 'glyphicon-heart' : 'glyphicon-heart-empty']"></i>
           <!-- <i class="glyphicon glyphicon-heart"></i> -->
         </span>
         <span class="vol col-md-4">
@@ -71,66 +72,145 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from 'assets/js/config'
-import { getRecommend, getDiscList } from 'api/recommend'
-import { ERR_OK } from 'api/config'
-import { Song, createSong } from 'assets/js/song'
+// import { getRecommend, getDiscList } from 'api/recommend'
+// import { ERR_OK } from 'api/config'
+// import { Song, createSong } from 'assets/js/song'
+import { removeClass, addClass, hasClass } from 'assets/js/dom'
+// import { debounce } from 'assets/js/util'
 
 export default {
   data () {
     return {
+      lyric: ''
     }
   },
 
-computed: {
+  computed: {
     currentsong: function () {
       let list = (this.mode === playMode.random) ? this.playinglist : this.playlistreally
-      console.log(list[this.currentIndex])
       return list[this.currentIndex] || {}
     },
+
+    buffered () {
+      return this.$refs.aud ? this.$refs.aud.buffered : 0
+    },
+
+    saved () {
+      return this.isSaved(this.currentsong)
+    },
+
     ...mapGetters([
       'playlist',
       'playlistreally',
       'mode',
       'currentIndex',
       'playing',
-      'currenttime'
+      'currenttime',
+      'saveList'
     ])
   },
 
   watch: {
-    playing (newval, oldval) {
-      if (newval) {
-        console.log(this.$refs.aud)
-        this.$refs.aud.play()
-      } else {
-        this.$refs.aud.pause()
+    playing (newval) {
+      this.$nextTick(() => {
+        this.playing ? this.$refs.aud.play() : this.$refs.aud.pause()
+      })
+      if (newval === hasClass(this.$refs.pause, 'glyphicon-play')) {
+        this._toggleClass(this.$refs.pause, 'glyphicon-play')
+        this._toggleClass(this.$refs.pause, 'glyphicon-pause')
       }
+    },
+    currentsong (newval) {
+      this.getlrc(newval)
     }
   },
 
+  mounted () {
+    this.getlrc(this.currentsong)
+  },
+
   methods: {
+    getlrc (song) {
+      let lrc = song.getLyric().then((res) => {
+        this.lyric = res
+      })
+    },
+    testPlaying () {
+      if (this.palying === this.paused) {
+        if (this.playing) {
+          this.$refs.aud.play()
+        } else {
+          this.$refs.aud.pause()
+        }
+      }
+    },
+    nextSong () {
+      let flag = this.indexPlus()
+      if (flag && this.mode === playMode.sequence) {
+        this.setPlaying(false)
+      //   this.$refs.aud.pause()
+      // } else {
+      //   this.$refs.aud.play()
+      }
+    },
+    lastSong () {
+      let flag = this.indexSubstraction()
+      if (flag && this.mode === playMode.sequence) {
+        this.setPlaying(false)
+      //   this.$refs.aud.pause()
+      // } else {
+      //   this.$refs.aud.play()
+      }
+    },
     playEnd () { // 一首歌播放结束
+      console.log('playend')
       this.currentIndex += 1
       if (this.currentIndex >= this.playlist.length) { // 列表播放完
         if (this.mode === playMode.sequence) {
           this.currentIndex = 0
           this.setPlaying(false)
-        } else  {
+        } else {
           this.currentIndex = 0
           this.$refs.aud.play()
         }
       }
     },
-    playtoggle () {
-      this.setPlaying(!this.playing)
-      // if (this.playing) {
-      //   this.$refs.aud.pause()
-      // } else {
-      //   this.$refs.aud.play()
-      // }
+
+    _toggleClass (el, cla) {
+      if (hasClass(el, cla)) {
+        removeClass(el, cla)
+      } else {
+        addClass(el, cla)
+      }
     },
+
+    playtoggle () {
+      if (!this.playing) {
+        console.log(this.$refs.aud)
+        this.$refs.aud.play()
+      } else {
+        this.$refs.aud.pause()
+      }
+      this.setPlaying(!this.playing)
+    },
+
+    isSaved (song) {
+      return this.saveList && this.saveList.some((item) => {
+        return item === song
+      })
+    },
+
+    // saveSong (song) {
+
+    // },
+
+    ...mapActions([
+      'indexPlus',
+      'indexSubstraction',
+      'toggleSaveSong'
+    ]),
     ...mapMutations({
       setPlaying: 'SET_PLAYING_STATE'
     })
@@ -244,6 +324,9 @@ computed: {
     .control2 {
       span {
         line-height: 50px;
+        .glyphicon-heart {
+          color: #ff0000
+        }
       }
     }
   }

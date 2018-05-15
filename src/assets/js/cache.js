@@ -4,19 +4,21 @@ const SEARCH_KEY = '__search__' // 搜索历史
 const SEARCH_MAX_LEN = 15
 
 const PLAY_KEY = '__play__' // 播放历史
-const PLAY_MAX_LEN = 200
+// const PLAY_MAX_LEN = 200
 
 const PLAYLIST_KEY = '__playlist__' // 播放列表
-const PLAYLIST_MAX_LEN = 200
+// const PLAYLIST_MAX_LEN = 200
 
 const PLAYLIST_REAL_KEY = '__playlistreal__' // 实际播放列表
-const PLAYLIST_REAL_MAX_LEN = 200
+// const PLAYLIST_REAL_MAX_LEN = 200
 
 const FAVORITE_KEY = '__favorite__' // 收藏歌曲列表
 const FAVORITE_MAX_LEN = 200
 
-const FAVORITELIST_KEY = '__favoritelist__' // 收藏歌单
-const FAVORITELIST_MAX_LEN = 50
+// const FAVORITELIST_KEY = '__favoritelist__' // 收藏歌单
+// const FAVORITELIST_MAX_LEN = 50
+
+const CURRENT_INDEX_KEY = '__currentIndex__' // 歌曲播放索引
 
 function insertArray (arr, val, compare, maxLen) {
   const index = arr.findIndex(compare)
@@ -90,6 +92,14 @@ export function loadPlayList () {
 
 export function loadPlayListReal () {
   return storage.get(PLAYLIST_REAL_KEY, [])
+}
+
+export function saveIndex (index) {
+  storage.set(CURRENT_INDEX_KEY, index)
+}
+
+export function loadIndex () {
+  return storage.get(CURRENT_INDEX_KEY, 0)
 }
 
 // 收藏列表
