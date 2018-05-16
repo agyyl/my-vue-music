@@ -19,3 +19,5 @@ export const saveList = state => state.saveList
 export const saveSongList = state => state.saveSongList
 
 export const searchHistory = state => state.searchHistory
+
+export const totalTime = state => state.totalTime

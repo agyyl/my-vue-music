@@ -5,14 +5,21 @@
       <scroll class="right col-md-8" :data="lrcdata" @scroll="scroll">
         <div class="showsrc">
           <h2>{{song.name}}</h2>
-          <p v-for="item in lrc">{{item}}</p>
+          <p v-for="item in lrc"
+            :key="item.name"
+            ref="lyr"
+          >
+            {{item}}
+          </p>
         </div>
       </scroll>
     </div>
     <scroll class="list col-md-4">
-      <ul class="list">
-        <!-- {{playlist}} -->
-        <li v-for="item in playlist" :key="item.id">{{item.name}}</li>
+      <ul class="listshow">
+        <li v-for="item in playlist"
+          :key="item.id"
+          class="list-style"
+        >{{item.name}}</li>
       </ul>
     </scroll>
   </div>
@@ -38,14 +45,23 @@ export default {
   },
 
   watch: {
-    song (newval) {
-      let lrc = newval.getLyric().then((res) => {
-        this.lyric = res
-      })
-    },
-    lyric (str) {
-      this.lrc = str.split('\n')
-    }
+    // song (newval) {
+    //   let lrc = newval.getLyric().then((res) => {
+    //     this.lyric = res
+    //     console.log(this.lyric = res)
+    //   })
+    // }
+
+    // currenttime (newval) {
+    //   let min = newval / 60 >= 10 ? newval / 60 : '0' + newval / 60
+    //   let sec = newval % 60 >= 10 ? newval % 60 : '0' + newval % 60
+    //   let str = '/' + min + ':' + sec + '/'
+    //   // let index = this.$refs.lyr.findIndex((item) => {
+    //   //   return str.test(item)
+    //   // })
+    //   // console.log(this.$refs.lyr.findIndex[index])
+    //   console.log(this.$refs.lyr)
+    // }
   },
 
   computed: {
@@ -57,7 +73,8 @@ export default {
       'currenttime',
       'playlist',
       'playlistreally',
-      'currentIndex'
+      'currentIndex',
+      'totalTime'
     ])
   },
 
@@ -67,9 +84,12 @@ export default {
 
   methods: {
     getlrc (song) {
+      console.log(song)
       let lrc = song.getLyric().then((res) => {
         this.lyric = res
+        console.log(res)
       })
+      // this.lyric = song.lyric.split('/n')
     },
     scroll () {
       console.log(1)
@@ -95,6 +115,14 @@ export default {
       height: 100%;
       border: 1px solid red;
       overflow: hidden;
+    }
+  }
+  .list {
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid #aaa;
+    .listshow {
+      // height: 100px;
     }
   }
 }

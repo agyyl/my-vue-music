@@ -4,7 +4,14 @@
     <div class="song col-md-10 col-md-offset-1 container">
       <!-- 左侧 控制 暂停 上下一首 歌 -->
       <div class="control1 col-md-2">
-        <audio :src="currentsong.url" ref="aud" @ended="playEnd">您的浏览器不支持 audio 标签</audio>
+        <audio :src="currentsong.url"
+          ref="aud" @ended="playEnd"
+          @loadedmetadata="getTotalTime"
+          @canplay="playSong"
+          @timeupdate="timechange"
+        >
+          您的浏览器不支持 audio 标签
+        </audio>
         <span @click="lastSong">
           <i class="glyphicon glyphicon-step-backward lastsong"></i>
         </span>
@@ -37,14 +44,16 @@
           <div class="playcurrent container">
               <!-- 进度条 -->
               <div class="jindutiao col-md-9">
-                <div class="currenttimeshow">
+                <div class="currenttimeshow"
+                  ref="currenttimeshow"
+                >
                   <div class="dot"></div>
                 </div>
               </div>
 
               <!-- 播放时间 -->
               <div class="currenttime col-md-3">
-                <span class="currenttimenumber">01:25 {{buffered}}</span> / <span class="alltime"> 04:54</span>
+                <span class="currenttimenumber">{{parsedCurrentTime}}</span> / <span class="alltime">{{parsedTotalTime}}</span>
               </div>
           </div>
 
@@ -101,6 +110,15 @@ export default {
       return this.isSaved(this.currentsong)
     },
 
+    parsedTotalTime () {
+      return this.parsetime(this.totalTime)
+    },
+
+    parsedCurrentTime () {
+      return this.parsetime(this.currenttime)
+    },
+
+
     ...mapGetters([
       'playlist',
       'playlistreally',
@@ -108,7 +126,8 @@ export default {
       'currentIndex',
       'playing',
       'currenttime',
-      'saveList'
+      'saveList',
+      'totalTime'
     ])
   },
 
@@ -127,55 +146,61 @@ export default {
     }
   },
 
-  mounted () {
-    this.getlrc(this.currentsong)
-  },
-
   methods: {
-    getlrc (song) {
-      let lrc = song.getLyric().then((res) => {
-        this.lyric = res
-      })
+    playSong () {
+      if (this.$refs.aud.timer) {
+        clearTimeout(this.$refs.aud.timer)
+      }
+      this.$refs.aud.timer = setTimeout(this.testPlaying, 300);
     },
+
+    timechange () {
+      let time = this.$refs.aud ? this.$refs.aud.currentTime : 0
+      this.setPer(time)
+      time = parseInt(time)
+      if (time !== this.currenttime) {
+        this.setCurrentTime(time)
+      }
+    },
+
+    setPer (time) {
+      let per = parseInt(time / parseInt(this.totalTime) * 1000) / 10
+      if (this.$refs.currenttimeshow) {
+        this.$refs.currenttimeshow.style.width = per + '%'
+      }
+    },
+
+    parsetime (time) {
+      time = parseInt(time)
+      let min = (time % 60 < 10 ? '0' : '') + time % 60
+      return parseInt(time / 60) + ':' + min
+    },
+    getTotalTime () {
+      let time = parseInt(this.$refs.aud.duration)
+      this.setTotalTime(time)
+    },
+
     testPlaying () {
-      if (this.palying === this.paused) {
-        if (this.playing) {
-          this.$refs.aud.play()
-        } else {
-          this.$refs.aud.pause()
-        }
+      if (this.playing) {
+        this.$refs.aud.play()
+      } else {
+        this.$refs.aud.pause()
       }
     },
     nextSong () {
-      let flag = this.indexPlus()
-      if (flag && this.mode === playMode.sequence) {
+      let flag = false
+      this.indexPlus().then((res) => {
+        flag = res
+      })
+      if (flag) {
         this.setPlaying(false)
-      //   this.$refs.aud.pause()
-      // } else {
-      //   this.$refs.aud.play()
       }
     },
     lastSong () {
-      let flag = this.indexSubstraction()
-      if (flag && this.mode === playMode.sequence) {
-        this.setPlaying(false)
-      //   this.$refs.aud.pause()
-      // } else {
-      //   this.$refs.aud.play()
-      }
+      this.indexSubstraction()
     },
     playEnd () { // 一首歌播放结束
-      console.log('playend')
-      this.currentIndex += 1
-      if (this.currentIndex >= this.playlist.length) { // 列表播放完
-        if (this.mode === playMode.sequence) {
-          this.currentIndex = 0
-          this.setPlaying(false)
-        } else {
-          this.currentIndex = 0
-          this.$refs.aud.play()
-        }
-      }
+      this.nextSong()
     },
 
     _toggleClass (el, cla) {
@@ -188,7 +213,6 @@ export default {
 
     playtoggle () {
       if (!this.playing) {
-        console.log(this.$refs.aud)
         this.$refs.aud.play()
       } else {
         this.$refs.aud.pause()
@@ -212,7 +236,9 @@ export default {
       'toggleSaveSong'
     ]),
     ...mapMutations({
-      setPlaying: 'SET_PLAYING_STATE'
+      setPlaying: 'SET_PLAYING_STATE',
+      setTotalTime: 'SET_TOTAL_TIME',
+      setCurrentTime: 'SET_PLAYING_CURRENT_TIME'
     })
   }
 }
@@ -290,19 +316,18 @@ export default {
           .jindutiao {
             margin-top: 10px;
             padding: 0;
-            // width: 70%;
             height: 8px;
             background-color: #aaa;
             border-radius: 4px;
             .currenttimeshow {
               position: relative;
-              width: 38%;
+              width: 0%;
               height: 100%;
               background-color: $color-theme-red;
               border-radius: 4px;
               .dot {
                 position: absolute;
-                right: 0;
+                right: -12px;
                 top: 0;
                 margin-top: -3px;
                 @include circleborder(14px, 3px, #fff);

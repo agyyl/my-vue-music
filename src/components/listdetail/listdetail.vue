@@ -3,7 +3,7 @@
     <scroll class="listshow" v-if="disc">
       <div class="song">
         <!-- <div>{{disc[0]}}</div> -->
-         <div v-for="item in disc" :key="item.id" @click="choosesSong(item)">{{item.name}}</div>
+         <div v-for="item in disc" :key="item.id" @click="choosesSong({disc,item})">{{item.name}}</div>
       </div>
     </scroll>
   </div>
@@ -46,13 +46,13 @@ export default {
   },
 
   methods: {
-    choosesSong (item) {
+    choosesSong ({disc, item}) {
       // 将这首歌添加到 播放器 当前播放列表
       // 跳转到 播放页面
       this.$router.push({
         path: '/playdetail'
       })
-      this.chooseSong(item)
+      this.chooseSong({disc, item})
     },
     ...mapActions([
       'chooseSong'
@@ -77,6 +77,11 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
+    .song {
+      margin: 5px;
+      padding-left: 5px;
+      cursor: pointer;
+    }
   }
 }
 </style>

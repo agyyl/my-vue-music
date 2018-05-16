@@ -1,7 +1,7 @@
 import * as types from './mutation-types'
 import { playMode } from 'assets/js/config'
 import { shuffle } from 'assets/js/util'
-import { savePlaylist, savePlayReal, saveIndex } from 'assets/js/cache'
+import { savePlaylist, savePlayReal, saveIndex, saveFavorite } from 'assets/js/cache'
 
 let findIndex = function (list, song) {
   return list.findIndex((item) => {
@@ -9,18 +9,18 @@ let findIndex = function (list, song) {
   })
 }
 
-export const chooseSong = function ({commit, state}, song) {
-  // 选择歌单中的一首歌,需要动作: 1 将歌曲添加至播放列表最后 2 如果播放模式为 随机播放, 打乱歌单 3 保存选中歌曲的索引为当前播放歌曲的索引 4 将 播放状态 改为 true
-  let playlist = [...state.playlist]
-  let index = findIndex(playlist, song)
-  if (index === -1) {
-    playlist.push(song)
-    index = playlist.length - 1
-  }
+export const chooseSong = function ({commit, state}, {disc, item}) {
+  // 选择歌单中的一首歌,需要动作:
+  // 1 将歌单保存为正在播放歌单
+  // 2 如果播放模式为 随机播放, 打乱歌单
+  // 3 保存选中歌曲的索引为当前播放歌曲的索引
+  // 4 将 播放状态 改为 true
+  let playlist = disc
+  let index = findIndex(disc, item)
   let playlistreally = playlist
   if (state.playMode === playMode.random) {
     playlistreally = shuffle(playlist)
-    index = findIndex(playlistreally, song)
+    index = findIndex(playlistreally, item)
   }
 
   commit(types.SET_PLAYING_LIST, savePlaylist(playlist))
@@ -30,7 +30,7 @@ export const chooseSong = function ({commit, state}, song) {
   commit(types.SET_PLAYING_CURRENT_TIME, 0)
 }
 
-export const indexPlus = function ({commit, state}) {
+export const indexPlus = function ({commit, state}) { // index 加一
   let index = state.currentIndex
   index += 1
   let flag = false
@@ -40,15 +40,15 @@ export const indexPlus = function ({commit, state}) {
   }
   saveIndex(index)
   commit(types.SET_CURRENT_INDEX, index)
+  commit(types.SET_PLAYING_STATE, true)
+
   return flag
 }
 
-export const indexSubstraction = function ({ commit, state }) {
+export const indexSubstraction = function ({ commit, state }) { // index 减一
   let index = state.currentIndex
   index -= 1
-  let flag = false
   if (index < 0) { // 列表播放完
-    flag = true
     if (state.mode === playMode.sequence) {
       index = 0
     } else {
@@ -57,7 +57,6 @@ export const indexSubstraction = function ({ commit, state }) {
   }
   saveIndex(index)
   commit(types.SET_CURRENT_INDEX, index)
-  return flag
 }
 
 export const toggleSaveSong = function ({ commit, state }, song) {

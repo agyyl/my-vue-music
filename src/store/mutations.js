@@ -33,6 +33,9 @@ const mutations = {
   },
   [types.SET_PLAY_HISTORY] (state, list) {
     state.playHistory = list
+  },
+  [types.SET_TOTAL_TIME] (state, time) {
+    state.totalTime = time
   }
 }
 
