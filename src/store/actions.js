@@ -9,8 +9,9 @@ let findIndex = function (list, song) {
   })
 }
 
+// 选择歌单中的一首歌,
 export const chooseSong = function ({commit, state}, {disc, item}) {
-  // 选择歌单中的一首歌,需要动作:
+  // 需要动作:
   // 1 将歌单保存为正在播放歌单
   // 2 如果播放模式为 随机播放, 打乱歌单
   // 3 保存选中歌曲的索引为当前播放歌曲的索引
@@ -30,6 +31,7 @@ export const chooseSong = function ({commit, state}, {disc, item}) {
   commit(types.SET_PLAYING_CURRENT_TIME, 0)
 }
 
+// 播放歌曲索引 +1
 export const indexPlus = function ({commit, state}) { // index 加一
   let index = state.currentIndex
   index += 1
@@ -45,6 +47,7 @@ export const indexPlus = function ({commit, state}) { // index 加一
   return flag
 }
 
+// 播放歌曲索引 -1
 export const indexSubstraction = function ({ commit, state }) { // index 减一
   let index = state.currentIndex
   index -= 1
@@ -62,12 +65,13 @@ export const indexSubstraction = function ({ commit, state }) { // index 减一
 export const toggleSaveSong = function ({ commit, state }, song) {
   let newList = state.saveList.slice(0)
   let index = newList.findIndex((item) => {
-    return item === song
+    return item.id === song.id
   })
   if (index === -1) {
     newList.push(song)
   } else {
     newList.splice(index, 1)
   }
-  commit(types.SET_SAVE_LIST, newList)
+  console.log(newList)
+  commit(types.SET_SAVE_LIST, saveFavorite(newList))
 }

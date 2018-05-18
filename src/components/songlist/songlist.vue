@@ -47,7 +47,6 @@ export default {
   methods: {
     slecklist (item) {
       if (!item.dissid) {
-        console.log('item.dissid'+item.dissid)
         return
       }
       getSongList(item.dissid).then((res) => {

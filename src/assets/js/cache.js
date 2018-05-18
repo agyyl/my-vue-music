@@ -15,8 +15,8 @@ const PLAYLIST_REAL_KEY = '__playlistreal__' // 实际播放列表
 const FAVORITE_KEY = '__favorite__' // 收藏歌曲列表
 const FAVORITE_MAX_LEN = 200
 
-// const FAVORITELIST_KEY = '__favoritelist__' // 收藏歌单
-// const FAVORITELIST_MAX_LEN = 50
+const FAVORITELIST_KEY = '__favoritelist__' // 收藏歌单
+const FAVORITELIST_MAX_LEN = 50
 
 const CURRENT_INDEX_KEY = '__currentIndex__' // 歌曲播放索引
 
@@ -103,20 +103,7 @@ export function loadIndex () {
 }
 
 // 收藏列表
-export function saveFavorite (song) {
-  let songs = storage.get(FAVORITE_KEY, [])
-  insertArray(songs, song, (item) => {
-    return song.id === item.id
-  }, FAVORITE_MAX_LEN)
-  storage.set(FAVORITE_KEY, songs)
-  return songs
-}
-
-export function deleteFavorite (song) {
-  let songs = storage.get(FAVORITE_KEY, [])
-  deleteFromArray(songs, (item) => {
-    return item.id === song.id
-  })
+export function saveFavorite (songs) {
   storage.set(FAVORITE_KEY, songs)
   return songs
 }
@@ -126,24 +113,11 @@ export function loadFavorite () {
 }
 
 // 收藏歌单列表
-export function saveFavoriteList (song) {
-  let songs = storage.get(FAVORITE_KEY, [])
-  insertArray(songs, song, (item) => {
-    return song.id === item.id
-  }, FAVORITE_MAX_LEN)
-  storage.set(FAVORITE_KEY, songs)
-  return songs
-}
-
-export function deleteFavoriteList (song) {
-  let songs = storage.get(FAVORITE_KEY, [])
-  deleteFromArray(songs, (item) => {
-    return item.id === song.id
-  })
-  storage.set(FAVORITE_KEY, songs)
-  return songs
+export function saveFavoriteList (lists) {
+  storage.set(FAVORITELIST_KEY, lists)
+  return lists
 }
 
 export function loadFavoriteList () {
-  return storage.get(FAVORITE_KEY, [])
+  return storage.get(FAVORITELIST_KEY, [])
 }

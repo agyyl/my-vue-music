@@ -118,7 +118,6 @@ export default {
       return this.parsetime(this.currenttime)
     },
 
-
     ...mapGetters([
       'playlist',
       'playlistreally',
@@ -140,9 +139,6 @@ export default {
         this._toggleClass(this.$refs.pause, 'glyphicon-play')
         this._toggleClass(this.$refs.pause, 'glyphicon-pause')
       }
-    },
-    currentsong (newval) {
-      this.getlrc(newval)
     }
   },
 
@@ -151,13 +147,13 @@ export default {
       if (this.$refs.aud.timer) {
         clearTimeout(this.$refs.aud.timer)
       }
-      this.$refs.aud.timer = setTimeout(this.testPlaying, 300);
+      this.$refs.aud.timer = setTimeout(this.testPlaying, 300)
     },
 
     timechange () {
-      let time = this.$refs.aud ? this.$refs.aud.currentTime : 0
-      this.setPer(time)
-      time = parseInt(time)
+      let time = this.$refs.aud ? this.$refs.aud.currentTime : 0 // 获得已播放时长
+      this.setPer(time) // 设置播放百分比
+      time = parseInt(time * 10) / 10
       if (time !== this.currenttime) {
         this.setCurrentTime(time)
       }
@@ -222,7 +218,7 @@ export default {
 
     isSaved (song) {
       return this.saveList && this.saveList.some((item) => {
-        return item === song
+        return item.id === song.id
       })
     },
 

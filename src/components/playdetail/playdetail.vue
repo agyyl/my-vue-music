@@ -2,14 +2,16 @@
   <div class="container">
     <div class="lrc col-md-8">
       <img :src="song.image" alt="song.name" class="col-md-4 img-responsive center-block">
-      <scroll class="right col-md-8" :data="lrcdata" @scroll="scroll">
+      <scroll class="right col-md-8" :data="lrcdata" @scroll="scroll" ref="lyricList">
         <div class="showsrc">
           <h2>{{song.name}}</h2>
-          <p v-for="item in lrc"
+          <p v-for="item in lyric.lines"
             :key="item.name"
-            ref="lyr"
+            ref="lyricLine"
+            class="lrcline"
+            :class="{currentline: currentLineNum === item.index}"
           >
-            {{item}}
+            {{item.txt}}
           </p>
         </div>
       </scroll>
@@ -28,15 +30,17 @@
 <script>
 import { mapGetters } from 'vuex'
 import Song from 'assets/js/song'
-import { ERR_OK } from 'api/config'
+// import { ERR_OK } from 'api/config'
 import Scroll from 'base/scroll/scroll'
+import Lyric from 'assets/js/lyrparse'
 
 export default {
   data () {
     return {
       lyric: '',
-      lrc: [],
-      lrcdata: []
+      lrcdata: [],
+      lrc: '',
+      currentLineNum: ''
     }
   },
 
@@ -45,28 +49,20 @@ export default {
   },
 
   watch: {
-    // song (newval) {
-    //   let lrc = newval.getLyric().then((res) => {
-    //     this.lyric = res
-    //     console.log(this.lyric = res)
-    //   })
-    // }
-
-    // currenttime (newval) {
-    //   let min = newval / 60 >= 10 ? newval / 60 : '0' + newval / 60
-    //   let sec = newval % 60 >= 10 ? newval % 60 : '0' + newval % 60
-    //   let str = '/' + min + ':' + sec + '/'
-    //   // let index = this.$refs.lyr.findIndex((item) => {
-    //   //   return str.test(item)
-    //   // })
-    //   // console.log(this.$refs.lyr.findIndex[index])
-    //   console.log(this.$refs.lyr)
-    // }
+    playing (newval) {
+      if (newval) {
+        this.play()
+      } else {
+        this.stop()
+      }
+    }
   },
 
   computed: {
     song () {
-      return new Song(this.playlistreally[this.currentIndex])
+      let newSong = new Song(this.playlistreally[this.currentIndex])
+      this.getlrc(newSong)
+      return newSong
     },
     ...mapGetters([
       'playing',
@@ -84,15 +80,40 @@ export default {
 
   methods: {
     getlrc (song) {
-      console.log(song)
-      let lrc = song.getLyric().then((res) => {
-        this.lyric = res
-        console.log(res)
+      song.getLyric().then((res) => {
+        if (res) {
+          this.lyric = new Lyric(res, this.handleLyric)
+          if (this.playing) {
+            this.play()
+          }
+        }
       })
-      // this.lyric = song.lyric.split('/n')
     },
     scroll () {
       console.log(1)
+    },
+    handleLyric (lineNum) {
+      if (!this.$refs.lyricLine) {
+        return
+      }
+      if (lineNum > 5 && this.currentLineNum !== lineNum) {
+        let lineEl = this.$refs.lyricLine[lineNum - 5]
+        this.$refs.lyricList.scrollToElement(lineEl, 1000)
+      } else if (lineNum < 5 && this.currentLineNum !== lineNum) {
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
+      this.currentLineNum = lineNum
+    },
+    play () {
+      if (this.timer) {
+        clearInterval(this.timer)
+      }
+      this.timer = setInterval(() => {
+        this.lyric.setTime(this.currenttime)
+      }, 30)
+    },
+    stop () {
+      clearInterval(this.timer)
     }
   }
 }
@@ -115,6 +136,15 @@ export default {
       height: 100%;
       border: 1px solid red;
       overflow: hidden;
+      .showsrc {
+        text-align: center;
+        p {
+          padding: 3px;
+          &.currentline {
+            color: #ff3e3e;
+          }
+        }
+      }
     }
   }
   .list {

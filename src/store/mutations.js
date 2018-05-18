@@ -22,10 +22,10 @@ const mutations = {
   [types.SET_DISC] (state, list) {
     state.disc = list
   },
-  [types.SET_SAVE_LIST] (state, list) {
+  [types.SET_SAVE_LIST] (state, list) { // 设置收藏的 歌曲的列表
     state.saveList = list
   },
-  [types.SET_SAVE_SONG_LIST] (state, list) {
+  [types.SET_SAVE_SONG_LIST] (state, list) { // 设置收藏的 歌曲列表(收藏的歌单)
     state.saveSongList = list
   },
   [types.SET_SEARCH_HISTORY] (state, list) {

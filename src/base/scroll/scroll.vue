@@ -110,7 +110,7 @@ export default {
       this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
     },
 
-    scrollToeElement () {
+    scrollToElement () {
       this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
     }
   },
