@@ -75,7 +75,7 @@ export default {
   },
 
   mounted () {
-    this.getlrc(this.song)
+    // this.getlrc(this.song)
   },
 
   methods: {

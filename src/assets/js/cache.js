@@ -13,10 +13,10 @@ const PLAYLIST_REAL_KEY = '__playlistreal__' // 实际播放列表
 // const PLAYLIST_REAL_MAX_LEN = 200
 
 const FAVORITE_KEY = '__favorite__' // 收藏歌曲列表
-const FAVORITE_MAX_LEN = 200
+// const FAVORITE_MAX_LEN = 200
 
 const FAVORITELIST_KEY = '__favoritelist__' // 收藏歌单
-const FAVORITELIST_MAX_LEN = 50
+// const FAVORITELIST_MAX_LEN = 50
 
 const CURRENT_INDEX_KEY = '__currentIndex__' // 歌曲播放索引
 

@@ -13,7 +13,9 @@
       个人中心
     </router-link>
     <div class="search col-md-2 col-md-offset-1 ">
-      <i class="glyphicon glyphicon-search"></i>
+      <p class="search">
+        <i class="glyphicon glyphicon-search"></i>
+      </p>
     </div>
   </div>
 </template>
@@ -48,9 +50,17 @@ export default {
     height: 100%;
     line-height: 70px;
     text-align: center;
+    cursor: pointer;
   }
-  .search {
+  div.search {
     line-height: $header-height;
+    background-color: #2264dd;
+    height: $header-height;
+    p.search {
+      line-height: $header-height / 2;
+      margin: 0 auto;
+      border-bottom: 2px solid #fff;
+    }
   }
 }
 </style>

@@ -43,7 +43,7 @@
           <!-- 进度信息 -->
           <div class="playcurrent container">
               <!-- 进度条 -->
-              <div class="jindutiao col-md-9">
+              <div class="jindutiao col-md-9" v-drag="changeCurrentTime">
                 <div class="currenttimeshow"
                   ref="currenttimeshow"
                 >
@@ -69,6 +69,7 @@
         </span>
         <span class="vol col-md-4">
           <i class="glyphicon glyphicon-volume-up"></i>
+          <div class="volshow"></div>
           <!-- <i class="glyphicon glyphicon-volume-off"></i> -->
         </span>
         <span class="playmode col-md-4">
@@ -83,16 +84,13 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from 'assets/js/config'
-// import { getRecommend, getDiscList } from 'api/recommend'
-// import { ERR_OK } from 'api/config'
-// import { Song, createSong } from 'assets/js/song'
 import { removeClass, addClass, hasClass } from 'assets/js/dom'
-// import { debounce } from 'assets/js/util'
 
 export default {
   data () {
     return {
-      lyric: ''
+      lyric: '',
+      per: 0
     }
   },
 
@@ -133,7 +131,7 @@ export default {
   watch: {
     playing (newval) {
       this.$nextTick(() => {
-        this.playing ? this.$refs.aud.play() : this.$refs.aud.pause()
+        this.testPlaying()
       })
       if (newval === hasClass(this.$refs.pause, 'glyphicon-play')) {
         this._toggleClass(this.$refs.pause, 'glyphicon-play')
@@ -143,6 +141,14 @@ export default {
   },
 
   methods: {
+    changeCurrentTime (percent) {
+      let time = this.totalTime * percent
+      this.setPer(time) // 设置播放百分比
+      time = parseInt(time * 10) / 10
+      if (time !== this.currenttime) {
+        this.setCurrentTime(time)
+      }
+    },
     playSong () {
       if (this.$refs.aud.timer) {
         clearTimeout(this.$refs.aud.timer)
@@ -178,6 +184,9 @@ export default {
 
     testPlaying () {
       if (this.playing) {
+        if (parseInt(this.currenttime) !== parseInt(this.$refs.aud.currentTime)) {
+          this.$refs.aud.currentTime = this.currenttime
+        }
         this.$refs.aud.play()
       } else {
         this.$refs.aud.pause()
@@ -222,11 +231,7 @@ export default {
       })
     },
 
-    // saveSong (song) {
-
-    // },
-
-    ...mapActions([
+...mapActions([
       'indexPlus',
       'indexSubstraction',
       'toggleSaveSong'
@@ -236,6 +241,49 @@ export default {
       setTotalTime: 'SET_TOTAL_TIME',
       setCurrentTime: 'SET_PLAYING_CURRENT_TIME'
     })
+  },
+
+  directives: {
+    drag: {
+      bind: function (el, binding) {
+        let oDiv = el // 当前元素
+        console.log(el)
+        let getLeft = function (ele) {
+          let left = parseInt(ele.offsetLeft)
+          if (ele.offsetParent) {
+            let supLeft = getLeft(ele.offsetParent);
+            if (!isNaN(supLeft)) {
+              left += supLeft
+            }
+          }
+          return left;
+        }
+        // let self = this // 上下文
+        oDiv.onmousedown = function (e) {
+          let left = getLeft(oDiv)
+          // 鼠标按下，计算当前元素距离可视区的距离
+          let l = e.clientX - left
+          let getPer = function () {
+            let per = l / oDiv.offsetWidth
+            if (per >= 1) {
+              per = 1
+            } else if (per <= 0) {
+              per = 0
+            }          
+            return per  
+          }
+          binding.value(getPer())
+          document.onmousemove = function (e) {
+            l = e.clientX - left
+            binding.value(getPer())
+          }
+          document.onmouseup = function (e) {
+            document.onmousemove = null
+            document.onmouseup = null
+          }
+        }
+      }
+    }
   }
 }
 
@@ -347,6 +395,19 @@ export default {
         line-height: 50px;
         .glyphicon-heart {
           color: #ff0000
+        }
+      }
+      span.vol {
+        position: relative;
+        .volshow {
+          position: absolute;
+          top: -65px;
+          left: 14px;
+          width: 15px;
+          height: 80px;
+          background-color: #b10f0f;
+          // z-index: 9;
+          // background-color: #000000;
         }
       }
     }
