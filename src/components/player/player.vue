@@ -29,15 +29,15 @@
       <div class="show col-md-8">
         <!-- 歌曲图片 -->
         <div class="pic col-md-1 col-md-offset-1">
-          <img :src="currentsong.image" alt="">
+          <a href=""><img :src="currentsong.image" alt=""></a>
         </div>
 
         <!-- 播放信息 -->
         <div class="playinfo col-md-10">
           <!-- 歌曲信息 -->
           <div class="songinfo">
-            <span class="songname">{{currentsong.name}}</span>
-            <span class="singer">{{currentsong.singer}}</span>
+            <a class="songname">{{currentsong.name}}</a>
+            <a class="singer">{{currentsong.singer}}</a>
           </div>
 
           <!-- 进度信息 -->
@@ -63,16 +63,21 @@
       </div>
       <!-- 右侧 控制 音量 播放模式 收藏 -->
       <div class="control2 col-md-2 container">
-        <span class="fav col-md-4" @click="toggleSaveSong(currentsong)">
+        <span class="fav col-md-4 item" @click="toggleSaveSong(currentsong)">
           <i class="glyphicon" :class="[saved ? 'glyphicon-heart' : 'glyphicon-heart-empty']"></i>
           <!-- <i class="glyphicon glyphicon-heart"></i> -->
         </span>
-        <span class="vol col-md-4">
-          <i class="glyphicon glyphicon-volume-up"></i>
-          <div class="volshow"></div>
+        <div class="vol col-md-4 item">
+          <drag class="volshow" direction="vertical" @changePercent="changeVol" v-show="showVol">
+            <div class="dragable">
+              <span class="dotOut"></span>
+              <span class="douIn"></span>
+            </div>
+          </drag>
+          <i class="glyphicon glyphicon-volume-up" @click.left="toggleVol"></i>
           <!-- <i class="glyphicon glyphicon-volume-off"></i> -->
-        </span>
-        <span class="playmode col-md-4">
+        </div>
+        <span class="playmode col-md-4 item">
           <i class="glyphicon glyphicon-random"></i>
           <!-- <i class="glyphicon glyphicon-retweet"></i> -->
         </span>
@@ -85,12 +90,14 @@
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from 'assets/js/config'
 import { removeClass, addClass, hasClass } from 'assets/js/dom'
+import Drag from 'base/drag/drag'
 
 export default {
   data () {
     return {
       lyric: '',
-      per: 0
+      per: 0,
+      showVol: false
     }
   },
 
@@ -141,12 +148,29 @@ export default {
   },
 
   methods: {
-    changeCurrentTime (percent) {
+    toggleVol () {
+      this.showVol = !this.showVol
+    },
+    changeVol (per) {
+      if (!this.$refs.aud) {
+        return
+      }
+      per = 1 - per
+      this.$refs.aud.volume = per
+    },
+    changeCurrentTime (percent, bool) {
+      this.testPlaying()
       let time = this.totalTime * percent
       this.setPer(time) // 设置播放百分比
       time = parseInt(time * 10) / 10
       if (time !== this.currenttime) {
-        this.setCurrentTime(time)
+        if (this.currentChangeTimer) {
+          clearTimeout(this.currentChangeTimer)
+        }
+        this.currentChangeTimer = setTimeout(() => {
+          this.setCurrentTime(time)
+          this.testPlaying()
+        }, 60)
       }
     },
     playSong () {
@@ -231,7 +255,7 @@ export default {
       })
     },
 
-...mapActions([
+    ...mapActions([
       'indexPlus',
       'indexSubstraction',
       'toggleSaveSong'
@@ -247,16 +271,15 @@ export default {
     drag: {
       bind: function (el, binding) {
         let oDiv = el // 当前元素
-        console.log(el)
         let getLeft = function (ele) {
           let left = parseInt(ele.offsetLeft)
           if (ele.offsetParent) {
-            let supLeft = getLeft(ele.offsetParent);
+            let supLeft = getLeft(ele.offsetParent)
             if (!isNaN(supLeft)) {
               left += supLeft
             }
           }
-          return left;
+          return left
         }
         // let self = this // 上下文
         oDiv.onmousedown = function (e) {
@@ -269,21 +292,27 @@ export default {
               per = 1
             } else if (per <= 0) {
               per = 0
-            }          
-            return per  
+            }
+            return per
           }
-          binding.value(getPer())
+          // binding.value(getPer())
           document.onmousemove = function (e) {
             l = e.clientX - left
             binding.value(getPer())
           }
           document.onmouseup = function (e) {
+            l = e.clientX - left
+            binding.value(getPer(), true)
             document.onmousemove = null
             document.onmouseup = null
           }
         }
       }
     }
+  },
+
+  components: {
+    Drag
   }
 }
 
@@ -334,6 +363,7 @@ export default {
       }
     }
     .show {
+      user-select:none;
       height: 100%;
       .pic {
         height: 100%;
@@ -347,11 +377,18 @@ export default {
       .playinfo {
         .songinfo {
           height: 20px;
-          span {
+          font-size: 0;
+          a {
+            font-size: 14px;
             margin-right: 10px;
-          }
-          span.singer {
-            color: #aaa;
+            color: #fff;
+            cursor: pointer;
+            &:hover {
+              text-decoration: none;
+            }
+            &.singer {
+              color: #aaa;
+            }
           }
         }
         .playcurrent {
@@ -391,13 +428,13 @@ export default {
 
     }
     .control2 {
-      span {
+      .item {
         line-height: 50px;
         .glyphicon-heart {
           color: #ff0000
         }
       }
-      span.vol {
+      .vol {
         position: relative;
         .volshow {
           position: absolute;
@@ -408,6 +445,12 @@ export default {
           background-color: #b10f0f;
           // z-index: 9;
           // background-color: #000000;
+          .dragable {
+            width: 5px;
+            height: 80%;
+            background-color: #fff;
+            margin: 3px auto;
+          }
         }
       }
     }
