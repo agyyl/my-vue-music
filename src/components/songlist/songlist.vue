@@ -3,7 +3,8 @@
     <scroll class="listshow">
       <div>
         <div v-for="item in discList" :key="item.dissid" @click="slecklist(item)" class="listName">
-          {{item.dissname}}
+          <img :src="item.imgurl" alt="item.dissnae" width="35" height="35">
+          <p>{{item.dissname}}</p>
         </div>
       </div>
     </scroll>
@@ -18,7 +19,6 @@ import { mapMutations } from 'vuex'
 import { getRecommend, getDiscList, getSongList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
 import Scroll from 'base/scroll/scroll'
-// import { addClass } from 'assets/js/dom'
 import { createSong, isValidMusic, processSongsUrl } from 'assets/js/song'
 
 export default {
@@ -39,10 +39,6 @@ export default {
   components: {
     Scroll
   },
-
-  // computed: {},
-
-  // mounted: {},
 
   methods: {
     slecklist (item) {
@@ -101,19 +97,22 @@ export default {
   right: 0;
   border: 3px solid green;
   overflow: hidden;
-  // height: 100%;
   .listshow {
-    // position: absolute;
-    // top: 0;
-    // left: 0;
     width: 100%;
     height: 100%;
-    // z-index: 9;
     .listName {
-      height: 18px;
-      margin: 3px;
+      height: 40px;
+      margin: 5px;
       padding-left: 30px;
       cursor: pointer;
+      img {
+        width: 35px;
+        height: 35px;
+      }
+      p {
+        display: inline-block;
+        margin-left: 5px;
+      }
     }
   }
 }

@@ -12,10 +12,9 @@
     <router-link tag="div" class="mymusic col-md-2 routeritem" to="/personal">
       个人中心
     </router-link>
-    <div class="search col-md-2 col-md-offset-1 ">
-      <p class="search">
-        <i class="glyphicon glyphicon-search"></i>
-      </p>
+    <div class="search col-md-2">
+      <input type="text" class="search form-control" place="请输入搜索内容">
+      <i class="glyphicon glyphicon-search"></i>
     </div>
   </div>
 </template>
@@ -53,13 +52,20 @@ export default {
     cursor: pointer;
   }
   div.search {
+    border-left: 4px solid #fff;
     line-height: $header-height;
-    background-color: #2264dd;
     height: $header-height;
-    p.search {
-      line-height: $header-height / 2;
-      margin: 0 auto;
-      border-bottom: 2px solid #fff;
+    position: relative;
+    input.search {
+      margin-top: 15px;
+    }
+    i {
+      position: absolute;
+      top: 18px;
+      right: 25px;
+      font-size: 26px;
+      color: #000000;
+      cursor: pointer;
     }
   }
 }

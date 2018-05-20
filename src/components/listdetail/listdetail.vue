@@ -1,9 +1,11 @@
 <template>
   <div id="listdetail">
     <scroll class="listshow" v-if="disc">
-      <div class="song">
-        <!-- <div>{{disc[0]}}</div> -->
-         <div v-for="item in disc" :key="item.id" @click="choosesSong({disc,item})">{{item.name}}</div>
+      <div class="songshow">
+         <div v-for="item in disc" :key="item.id" @click="choosesSong({disc,item})" class="song">
+           <img :src="item.image" alt="item.name" width="35" height="35">
+           <p class="songname">{{item.name}}</p>
+          </div>
       </div>
     </scroll>
   </div>
@@ -11,9 +13,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-// import { getSongList } from 'api/recommend'
-// import { ERR_OK } from 'api/config'
-// import { createSong, isValidMusic, processSongUrl, getSongsUrl } from 'assets/js/song'
 import Scroll from 'base/scroll/scroll'
 
 export default {
@@ -77,10 +76,18 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    .song {
+    .songshow {
       margin: 5px;
       padding-left: 5px;
       cursor: pointer;
+      .song {
+        height: 40px;
+        margin: 5px;
+        .songname {
+          display: inline-block;
+          margin-left: 5px;
+        }
+      }
     }
   }
 }

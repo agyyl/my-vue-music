@@ -20,6 +20,8 @@ const FAVORITELIST_KEY = '__favoritelist__' // 收藏歌单
 
 const CURRENT_INDEX_KEY = '__currentIndex__' // 歌曲播放索引
 
+const PLAYVOL_KEY = '__playVol__' // 歌曲播放音量
+
 function insertArray (arr, val, compare, maxLen) {
   const index = arr.findIndex(compare)
   if (index === 0) {
@@ -120,4 +122,13 @@ export function saveFavoriteList (lists) {
 
 export function loadFavoriteList () {
   return storage.get(FAVORITELIST_KEY, [])
+}
+
+export function savePlayVol (vol) {
+  storage.set(PLAYVOL_KEY, vol)
+  return vol
+}
+
+export function loadVol () {
+  return storage.get(PLAYVOL_KEY, 1)
 }

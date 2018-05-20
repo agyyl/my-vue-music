@@ -57,11 +57,14 @@ export default {
         t = e.clientY - oTop
         l = e.clientX - oLeft
         self.changePercent(getPercent())
+        return false
       }
       document.onmouseup = function (e) {
         document.onmousemove = null
         document.onmouseup = null
+        return false
       }
+      return false
     }
   },
 

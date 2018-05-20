@@ -4,6 +4,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 import './assets/js/jquery-vendor.js'
+import 'assets/css/base.scss'
 
 // window.jQuery = jQuery
 

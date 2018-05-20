@@ -13,7 +13,10 @@
       </div>
     </div>
     <div class="list">
-      <p v-for="item in list" :key="item.id">{{item.name}}</p>
+      <div v-for="item in list" :key="item.id">
+        <img :src="item.image" alt="item.name" width="25" height="25">
+        <p class="songname">{{item.name}}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -56,14 +59,18 @@ export default {
   overflow: hidden;
   width: 100%;
   .save {
+    padding-left: 35px;
     width: 40%;
+    height: 100%;
     float: left;
-    border: 1px solid #aaa;
   }
   .list {
-    width: 40%;
-    float: right;
-    border: 1px solid #aaa;
+    float: left;
+    padding: 30px;
+    .songname {
+      display: inline-block;
+      margin-left: 10px;
+    }
   }
 }
 </style>

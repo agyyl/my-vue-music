@@ -63,18 +63,21 @@
       </div>
       <!-- 右侧 控制 音量 播放模式 收藏 -->
       <div class="control2 col-md-2 container">
+        <!-- 收藏歌曲 -->
         <span class="fav col-md-4 item" @click="toggleSaveSong(currentsong)">
           <i class="glyphicon" :class="[saved ? 'glyphicon-heart' : 'glyphicon-heart-empty']"></i>
-          <!-- <i class="glyphicon glyphicon-heart"></i> -->
         </span>
-        <div class="vol col-md-4 item">
+        <!-- 音量控制 -->
+        <div class="vol col-md-4 item" ref="volcon">
           <drag class="volshow" direction="vertical" @changePercent="changeVol" v-show="showVol">
             <div class="dragable">
-              <span class="dotOut"></span>
-              <span class="douIn"></span>
+              <div class="mask"  ref="mask"></div>
+              <div class="dotOut" ref="dotOut">
+                <div class="douIn"></div>
+              </div>
             </div>
           </drag>
-          <i class="glyphicon glyphicon-volume-up" @click.left="toggleVol"></i>
+          <i class="glyphicon glyphicon-volume-up" @click.self.left="toggleVol"></i>
           <!-- <i class="glyphicon glyphicon-volume-off"></i> -->
         </div>
         <span class="playmode col-md-4 item">
@@ -91,19 +94,29 @@ import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from 'assets/js/config'
 import { removeClass, addClass, hasClass } from 'assets/js/dom'
 import Drag from 'base/drag/drag'
+import { isDOMContains } from 'assets/js/dom.js'
+import { savePlayVol, loadVol } from 'assets/js/cache'
 
 export default {
   data () {
     return {
       lyric: '',
       per: 0,
-      showVol: false
+      showVol: false,
+      playVol: 1
     }
+  },
+
+  mounted () {
+    this.playVol = loadVol()
   },
 
   computed: {
     currentsong: function () {
       let list = (this.mode === playMode.random) ? this.playinglist : this.playlistreally
+      // this.$nextTick(() => {
+      //   this.$refs.aud
+      // })
       return list[this.currentIndex] || {}
     },
 
@@ -144,11 +157,32 @@ export default {
         this._toggleClass(this.$refs.pause, 'glyphicon-play')
         this._toggleClass(this.$refs.pause, 'glyphicon-pause')
       }
+    },
+    
+    playVol (newval) {
+      if (this.$refs.aud) {
+        this.$refs.aud.volume = savePlayVol(this.playVol)
+        this.$refs.mask.style.height = parseInt(newval * 100) + '%'
+        this.$refs.dotOut.style.top = parseInt(100 - newval * 100) + '%'
+      }
     }
   },
 
   methods: {
     toggleVol () {
+      let self = this
+      let hiddenVol = function (e) {
+        let bool = self.$refs.volcon && isDOMContains(self.$refs.volcon, e.target, document)
+        if (!bool) {
+          self.$nextTick(() => {
+            self.showVol = false
+            document.removeEventListener('click', hiddenVol)
+          })
+        }
+      }
+      if (!this.showVol) {
+        document.addEventListener('click', hiddenVol)
+      }
       this.showVol = !this.showVol
     },
     changeVol (per) {
@@ -156,7 +190,7 @@ export default {
         return
       }
       per = 1 - per
-      this.$refs.aud.volume = per
+      this.playVol = per
     },
     changeCurrentTime (percent, bool) {
       this.testPlaying()
@@ -378,6 +412,9 @@ export default {
         .songinfo {
           height: 20px;
           font-size: 0;
+          white-space:nowrap;
+          overflow:hidden;
+          text-overflow: ellipsis;
           a {
             font-size: 14px;
             margin-right: 10px;
@@ -438,18 +475,43 @@ export default {
         position: relative;
         .volshow {
           position: absolute;
-          top: -65px;
+          bottom: $player-height;
           left: 14px;
           width: 15px;
           height: 80px;
-          background-color: #b10f0f;
-          // z-index: 9;
-          // background-color: #000000;
+          background-color: $black;
           .dragable {
+            position: relative;
             width: 5px;
             height: 80%;
             background-color: #fff;
-            margin: 3px auto;
+            margin: 8px auto 0;
+            .dotOut {
+              position: absolute;
+              left: 50%;
+              bottom: 0;
+              width: 20px;
+              height: 20px;
+              margin-left:-10px;
+              margin-top: -10px;
+              border-radius: 50%;
+              background-color: $black;
+              .douIn {
+                width: 50%;
+                height: 50%;
+                margin: 25% auto;
+                border-radius: 50%;
+                background-color: #fff;
+              }
+            }
+            .mask {
+              width: 5px;
+              height: 0%;
+              position: absolute;
+              left: 0;
+              bottom: 0;
+              background-color: $red;
+            }
           }
         }
       }

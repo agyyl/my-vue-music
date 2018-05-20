@@ -30,7 +30,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import Song from 'assets/js/song'
-// import { ERR_OK } from 'api/config'
 import Scroll from 'base/scroll/scroll'
 import Lyric from 'assets/js/lyrparse'
 
