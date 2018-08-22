@@ -4,6 +4,7 @@ import axios from 'axios'
 
 const debug = process.env.NODE_ENV !== 'production'
 
+// 得到推荐页面 轮播图列表信息
 export function getRecommend () {
   const url = 'https://c.y.qq.com/musichall/fcgi-bin/fcg_yqqhomepagerecommend.fcg'
 
@@ -16,9 +17,10 @@ export function getRecommend () {
   return jsonp(url, data, options)
 }
 
+// 得到推荐页面 推荐歌单信息
 export function getDiscList () {
   // 线上环境地址，同学们根据自己的需要配置修改
-  const url = debug ? '/api/getDiscList' : 'http://ustbhuangyi.com/music/api/getDiscList'
+  const url = debug ? '/api/getDiscList' : 'http://yangyinglei.com/musictest/vue-music/src/api/getDiscList'
 
   const data = Object.assign({}, commonParams, {
     platform: 'yqq',
@@ -39,6 +41,7 @@ export function getDiscList () {
   })
 }
 
+// 根据 歌单id 得到歌单
 export function getSongList (disstid) {
   const url = debug ? '/api/getCdInfo' : 'http://ustbhuangyi.com/music/api/getCdInfo'
 

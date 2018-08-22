@@ -23,7 +23,7 @@ const mutations = {
     state.disc = list
   },
   [types.SET_SAVE_LIST] (state, list) { // 设置收藏的 歌曲的列表
-    state.saveList = list
+    state.saveMyList = list
   },
   [types.SET_SAVE_SONG_LIST] (state, list) { // 设置收藏的 歌曲列表(收藏的歌单)
     state.saveSongList = list
@@ -36,6 +36,9 @@ const mutations = {
   },
   [types.SET_TOTAL_TIME] (state, time) {
     state.totalTime = time
+  },
+  [types.SET_MY_FAVOURITE_SONGS] (state, list) {
+    state.myFavouriteSongs = list
   }
 }
 

@@ -3,25 +3,28 @@
     <div class="save">
       <h2>我的收藏</h2>
       <div class="lists">
-        <p class="fav">
-          收藏歌曲
-        </p>
+        <h3>我的歌单</h3>
+        <ul class="fav">
+          <li click="chooseMyList(item)" v-for="item in myList" :key="item.id">{{item.name}}</li>
+        </ul>
         <h3>收藏歌单</h3>
         <ul>
-          <li>我的歌单</li>
+          <li click="chooseTheirList(item)" v-for="item in saveSongList" :key="item.id">{{item.name}}</li>
         </ul>
       </div>
     </div>
     <div class="list">
-      <div v-for="item in list" :key="item.id">
+      <!-- <div v-for="item in list" :key="item.id">
         <img :src="item.image" alt="item.name" width="25" height="25">
         <p class="songname">{{item.name}}</p>
-      </div>
+      </div> -->
+      <list-detail :disc="list"></list-detail>
     </div>
   </div>
 </template>
 
 <script>
+import listDetail from 'components/listdetail/listdetail'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -31,21 +34,28 @@ export default {
     }
   },
 
-  // components: {},
+  components: {
+    listDetail
+  },
 
   computed: {
     ...mapGetters([
       'saveSongList',
-      'saveList',
+      'myList',
       'playHistory'
     ])
   },
 
   mounted () {
-    this.list = this.saveList
+    this.list = this.myList[0].songs
+    console.log(this.myList[0].songs)
   },
 
-  methods: {}
+  methods: {
+    chooseList (list) {
+      // this.
+    }
+  }
 }
 
 </script>
@@ -65,12 +75,17 @@ export default {
     float: left;
   }
   .list {
+    position: relative;
     float: left;
     padding: 30px;
-    .songname {
-      display: inline-block;
-      margin-left: 10px;
-    }
+    width: 40%;
+    height: 100%;
+    background-color: #9786d9;
+    border: 1px solid #aaa;
+    // .songname {
+    //   display: inline-block;
+    //   margin-left: 10px;
+    // }
   }
 }
 </style>

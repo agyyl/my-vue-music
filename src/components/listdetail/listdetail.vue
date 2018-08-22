@@ -22,6 +22,10 @@ export default {
     }
   },
 
+  props: {
+    disc: Array
+  },
+
   components: {
     Scroll
   },
@@ -31,27 +35,32 @@ export default {
 
   computed: {
     ...mapGetters([
-      'disc'
+      // 'disc'
     ])
   },
 
-  // mounted: {},
+  // mounted() {
+  //   console.log(this.disc)
+  // },
 
-  created () {
-    if (this.disc.length) {
-      this.$router.push(`/songlist`)
-      console.log(this.disc[0])
-    }
+  mounted () {
+    // if (this.disc && this.disc.length !== 0) {
+    // } else {
+    //   this.$router.push(`/songlist`)
+    //   console.log(this.disc[0])
+    // }
   },
 
   methods: {
     choosesSong ({disc, item}) {
       // 将这首歌添加到 播放器 当前播放列表
       // 跳转到 播放页面
+      console.log(disc)
+      console.log(item)
+      this.chooseSong({disc, item})
       this.$router.push({
         path: '/playdetail'
       })
-      this.chooseSong({disc, item})
     },
     ...mapActions([
       'chooseSong'

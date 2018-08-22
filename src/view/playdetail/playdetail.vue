@@ -16,14 +16,17 @@
         </div>
       </scroll>
     </div>
-    <scroll class="list col-md-4">
+    <!-- <scroll class="list col-md-4">
       <ul class="listshow">
         <li v-for="item in playlist"
           :key="item.id"
           class="list-style"
         >{{item.name}}</li>
       </ul>
-    </scroll>
+    </scroll> -->
+    <div class="list col-md-4">
+      <list-detail :disc="playlist"></list-detail>
+    </div>
   </div>
 </template>
 
@@ -32,6 +35,7 @@ import { mapGetters } from 'vuex'
 import Song from 'assets/js/song'
 import Scroll from 'base/scroll/scroll'
 import Lyric from 'assets/js/lyrparse'
+import ListDetail from 'components/listdetail/listdetail'
 
 export default {
   data () {
@@ -44,7 +48,8 @@ export default {
   },
 
   components: {
-    Scroll
+    Scroll,
+    ListDetail
   },
 
   watch: {
@@ -75,6 +80,7 @@ export default {
 
   mounted () {
     // this.getlrc(this.song)
+    console.log(this.playlist)
   },
 
   methods: {
@@ -128,12 +134,12 @@ export default {
   right: 0;
   bottom: $player-height;
   // height: 100%;
-  border: 3px solid green;
+  // border: 3px solid green;
   .lrc {
     height: 100%;
     .right {
       height: 100%;
-      border: 1px solid red;
+      // border: 1px solid red;
       overflow: hidden;
       .showsrc {
         text-align: center;

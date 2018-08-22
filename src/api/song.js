@@ -5,6 +5,7 @@ import {ERR_OK} from 'api/config'
 
 const debug = process.env.NODE_ENV !== 'production'
 
+// 根据 mid 得到歌曲歌词
 export function getLyric (mid) {
   const url = debug ? '/api/lyric' : 'http://ustbhuangyi.com/music/api/lyric'
 
@@ -25,6 +26,7 @@ export function getLyric (mid) {
   })
 }
 
+// 根据 songs 得到歌曲图片
 export function getSongsUrl (songs) {
   const url = debug ? '/api/getPurlUrl' : 'http://ustbhuangyi.com/music/api/getPurlUrl'
 

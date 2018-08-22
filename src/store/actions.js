@@ -1,7 +1,16 @@
 import * as types from './mutation-types'
-import { playMode } from 'assets/js/config'
-import { shuffle } from 'assets/js/util'
-import { savePlaylist, savePlayReal, saveIndex, saveFavorite } from 'assets/js/cache'
+import {
+  playMode
+} from 'assets/js/config'
+import {
+  shuffle
+} from 'assets/js/util'
+import {
+  savePlaylist,
+  savePlayReal,
+  saveIndex,
+  saveMyFavorite
+} from 'assets/js/cache'
 
 let findIndex = function (list, song) {
   return list.findIndex((item) => {
@@ -10,7 +19,7 @@ let findIndex = function (list, song) {
 }
 
 // 选择歌单中的一首歌,
-export const chooseSong = function ({commit, state}, {disc, item}) {
+export const chooseSong = function ({ commit, state }, { disc, item }) {
   // 需要动作:
   // 1 将歌单保存为正在播放歌单
   // 2 如果播放模式为 随机播放, 打乱歌单
@@ -32,7 +41,7 @@ export const chooseSong = function ({commit, state}, {disc, item}) {
 }
 
 // 播放歌曲索引 +1
-export const indexPlus = function ({commit, state}) { // index 加一
+export const indexPlus = function ({ commit, state }) { // index 加一
   let index = state.currentIndex
   index += 1
   let flag = false
@@ -48,7 +57,8 @@ export const indexPlus = function ({commit, state}) { // index 加一
 }
 
 // 播放歌曲索引 -1
-export const indexSubstraction = function ({ commit, state }) { // index 减一
+export const indexSubstraction = function ({ commit, state }) {
+  // index 减一
   let index = state.currentIndex
   index -= 1
   if (index < 0) { // 列表播放完
@@ -63,15 +73,21 @@ export const indexSubstraction = function ({ commit, state }) { // index 减一
 }
 
 export const toggleSaveSong = function ({ commit, state }, song) {
-  let newList = state.saveList.slice(0)
+  let newObj = state.myFavouriteSongs || {
+    name: '我喜欢的音乐'
+  }
+  newObj.songs = state.myFavouriteSongs ? state.myFavouriteSongs.songs || [] : []
+  let newList = newObj.songs.slice(0)
   let index = newList.findIndex((item) => {
     return item.id === song.id
   })
+  console.log(index, 'index')
   if (index === -1) {
     newList.push(song)
   } else {
     newList.splice(index, 1)
   }
   console.log(newList)
-  commit(types.SET_SAVE_LIST, saveFavorite(newList))
+  newObj.songs = newList
+  commit(types.SET_MY_FAVOURITE_SONGS, saveMyFavorite(newObj))
 }

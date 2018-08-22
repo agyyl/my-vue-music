@@ -64,7 +64,7 @@
       <!-- 右侧 控制 音量 播放模式 收藏 -->
       <div class="control2 col-md-2 container">
         <!-- 收藏歌曲 -->
-        <span class="fav col-md-4 item" @click="toggleSaveSong(currentsong)">
+        <span class="fav col-md-4 item" @click="saveSong(currentsong)">
           <i class="glyphicon" :class="[saved ? 'glyphicon-heart' : 'glyphicon-heart-empty']"></i>
         </span>
         <!-- 音量控制 -->
@@ -143,22 +143,23 @@ export default {
       'currentIndex',
       'playing',
       'currenttime',
-      'saveList',
-      'totalTime'
+      'myList',
+      'totalTime',
+      'myFavoriteSongs'
     ])
   },
 
   watch: {
     playing (newval) {
-      this.$nextTick(() => {
-        this.testPlaying()
-      })
       if (newval === hasClass(this.$refs.pause, 'glyphicon-play')) {
         this._toggleClass(this.$refs.pause, 'glyphicon-play')
         this._toggleClass(this.$refs.pause, 'glyphicon-pause')
       }
+      this.$nextTick(() => {
+        this.testPlaying()
+      })
     },
-    
+
     playVol (newval) {
       if (this.$refs.aud) {
         this.$refs.aud.volume = savePlayVol(this.playVol)
@@ -169,6 +170,12 @@ export default {
   },
 
   methods: {
+    saveSong () {
+      let song = this.currentsong
+      console.log(song)
+      this.toggleSaveSong(song)
+    },
+
     toggleVol () {
       let self = this
       let hiddenVol = function (e) {
@@ -249,6 +256,7 @@ export default {
       } else {
         this.$refs.aud.pause()
       }
+      // this.changeVol()
     },
     nextSong () {
       let flag = false
@@ -284,9 +292,18 @@ export default {
     },
 
     isSaved (song) {
-      return this.saveList && this.saveList.some((item) => {
-        return item.id === song.id
-      })
+      console.log(song, 'song')
+      console.log(this.myFavoriteSongs.songs)
+      if (this.myFavoriteSongs && this.myFavoriteSongs.songs) {
+        let result = this.myFavoriteSongs.songs.some((item) => {
+          console.log(item)
+          return item.id === song.id
+        })
+        console.log(result, 'result')
+        return result
+      } else {
+        return false
+      }
     },
 
     ...mapActions([

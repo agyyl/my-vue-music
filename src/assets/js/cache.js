@@ -22,6 +22,8 @@ const CURRENT_INDEX_KEY = '__currentIndex__' // 歌曲播放索引
 
 const PLAYVOL_KEY = '__playVol__' // 歌曲播放音量
 
+const MY_FAVORITE_KEY = '__myFavorite__'
+
 function insertArray (arr, val, compare, maxLen) {
   const index = arr.findIndex(compare)
   if (index === 0) {
@@ -111,7 +113,20 @@ export function saveFavorite (songs) {
 }
 
 export function loadFavorite () {
-  return storage.get(FAVORITE_KEY, [])
+  return storage.get(FAVORITE_KEY, [{songs: [], name: '我喜欢的', id: 'm_0'}])
+}
+
+export function saveMyFavorite (songs) {
+  storage.set(MY_FAVORITE_KEY, songs)
+  return songs
+}
+
+export function loadMyFavorite () {
+  return storage.get(MY_FAVORITE_KEY, {
+    songs: [],
+    name: '我喜欢的',
+    id: 'm_0'
+  })
 }
 
 // 收藏歌单列表

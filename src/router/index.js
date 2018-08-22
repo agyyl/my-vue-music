@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Personal from 'components/personal/personal'
-import Songlist from 'components/songlist/songlist'
-import PlayDetail from 'components/playdetail/playdetail'
+import Personal from 'view/personal/personal'
+import Songlist from 'view/songlist/songlist'
+import PlayDetail from 'view/playdetail/playdetail'
 
 import ListDetail from 'components/listdetail/listdetail'
 
@@ -13,11 +13,10 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/songlist'
+      redirect: '/personal'
     },
     {
       path: '/personal',
-
       component: Personal
     },
     {
